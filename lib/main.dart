@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mapminder_mobile/features/login/screen/login_screen.dart';
 import 'package:mapminder_mobile/features/map/screen/map_screen.dart';
 
 void main() {
@@ -16,7 +17,11 @@ class MapMinder extends StatelessWidget {
       // TODO: this should be decided with environment variables
       // eg: if production the debugShowCheckedModeBanner should be false else true
       debugShowCheckedModeBanner: false,
-      home: MapScreen(),
+      home: LoginScreen(),
+      routes: {
+        '/map': (context) => const MapScreen(),
+        '/login': (context) => const LoginScreen(),
+      },
     );
   }
 }
