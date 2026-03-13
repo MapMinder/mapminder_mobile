@@ -47,5 +47,18 @@
 	<true/>
   <key>GMSApiKey</key>
   <string>AIzaSyAIop-GD874FFSw1vDu7ITN0PlvLUiUUc0</string>
+      <key>GIDClientID</key>
+    <string>584397547736-o9g76anc39etcjdtjo0hv03tl0u312o8.apps.googleusercontent.com</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>com.googleusercontent.apps.584397547736-o9g76anc39etcjdtjo0hv03tl0u312o8</string>
+        </array>
+      </dict>
+    </array>
 </dict>
 </plist>

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mapminder_mobile/features/login/services/google_login_in_services.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -8,6 +9,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final loginWithGoogle = GoogleLoginInServices();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,8 +29,15 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: 20),
             // TODO: add actual google and apple icons for the buttons
             ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pushNamed(context, '/map');
+              onPressed: () async {
+                try {
+                  String idToken = await loginWithGoogle.signInWithGoogle();
+                } catch (error) {
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Something went wrong.. Could you retry again')),
+                  );
+                };
               }, 
               style: ElevatedButton.styleFrom(
                        fixedSize: const Size(250, 50)
