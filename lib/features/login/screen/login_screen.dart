@@ -9,7 +9,20 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final loginWithGoogle = GoogleLoginInServices();
+  final googleLoginServices = GoogleLoginServices();
+
+  void loginInWithGoogle() async {
+    try {
+      await googleLoginServices.login();
+      if (!mounted) return;
+      Navigator.pushNamed(context, "/map");
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Something went wrong.. Could you retry again')),
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,16 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: 20),
             // TODO: add actual google and apple icons for the buttons
             ElevatedButton.icon(
-              onPressed: () async {
-                try {
-                  String idToken = await loginWithGoogle.signInWithGoogle();
-                } catch (error) {
-                  if (!mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Something went wrong.. Could you retry again')),
-                  );
-                };
-              }, 
+              onPressed: loginInWithGoogle,
               style: ElevatedButton.styleFrom(
                        fixedSize: const Size(250, 50)
                      ),
