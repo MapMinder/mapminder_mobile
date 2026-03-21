@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mapminder_mobile/features/login/screen/login_screen.dart';
 import 'package:mapminder_mobile/features/map/screen/map_screen.dart';
+import 'package:mapminder_mobile/features/splash_screen/screen/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +21,7 @@ class MapMinder extends StatelessWidget {
       // TODO: this should be decided with environment variables
       // eg: if production the debugShowCheckedModeBanner should be false else true
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
+      home: SplashScreen(),
       routes: {
         '/map': (context) => const MapScreen(),
         '/login': (context) => const LoginScreen(),
