@@ -1,9 +1,10 @@
+
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mapminder_mobile/core/security_store.dart';
 import 'package:mapminder_mobile/features/login/repository/google_login_repository.dart';
-import 'package:mapminder_mobile/features/login/services/login_services.dart';
+import 'package:mapminder_mobile/features/login/services/interfaces/oauth_login_services.dart';
 
-class GoogleLoginServices implements LoginServices {
+class GoogleLoginServices implements OauthLoginServices {
   static GoogleLoginServices? _instance;
 
   factory GoogleLoginServices() {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mapminder_mobile/features/login/services/google_login_in_services.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -16,6 +17,10 @@ class _LoginScreenState extends State<LoginScreen> {
       await googleLoginServices.login();
       if (!mounted) return;
       Navigator.pushNamed(context, "/map");
+    } on GoogleSignInException catch(e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        return;
+      }
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
