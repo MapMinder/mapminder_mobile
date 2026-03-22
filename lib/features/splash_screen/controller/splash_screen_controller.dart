@@ -1,3 +1,4 @@
+import 'package:mapminder_mobile/core/app_logger.dart';
 import 'package:mapminder_mobile/features/login/services/login_service.dart';
 
 class SplashScreenController {
@@ -23,7 +24,8 @@ class SplashScreenController {
         return true;
       }
       return false;
-    } catch (error) {
+    } catch (e, s) {
+      AppLogger().error("Unexpected error occurred", e, s);
       throw Exception("Unexpected error occurred");
     }
   }

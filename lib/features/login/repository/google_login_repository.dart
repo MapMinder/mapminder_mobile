@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:mapminder_mobile/core/app_logger.dart';
 import 'package:mapminder_mobile/core/http_client.dart';
 import 'package:mapminder_mobile/features/login/dto/login_dto.dart';
 import 'package:mapminder_mobile/features/login/repository/interfaces/oauth_login_repository.dart';
@@ -24,9 +25,11 @@ class GoogleLoginRepository implements OauthLoginRepository {
         data: request.toJson(),
       );
       return response.data["result"];
-    } on DioException catch (e) {
+    } on DioException catch (e, s) {
+      AppLogger().error("error occurred while calling the backend. ${e.error}", e, s);
       throw Exception("error occurred while calling the backend. ${e.error}");
-    } catch (error) {
+    } catch (e, s) {
+      AppLogger().error("Unexpected error occurred", e, s);
       throw Exception("Unexpected error occurred");
     }
   }
@@ -37,9 +40,11 @@ class GoogleLoginRepository implements OauthLoginRepository {
       Response response = await client.dio.get("/user/me");
       User user = User.fromJson(response.data["result"]);
       return user;
-    } on DioException catch (e) {
+    } on DioException catch (e, s) {
+      AppLogger().error("error occurred while calling the backend. ${e.error}", e, s);
       throw Exception("error occurred while calling the backend. ${e.error}");
-    } catch (error){
+    } catch (e, s){
+      AppLogger().error("Unexpected error occurred", e, s);
       throw Exception("Unexpected error occurred");
     }
   }
