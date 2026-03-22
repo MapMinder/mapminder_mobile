@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mapminder_mobile/core/app_logger.dart';
 import 'package:mapminder_mobile/features/login/services/google_login_in_services.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -19,9 +20,10 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushNamed(context, "/map");
     } on GoogleSignInException catch(e) {
       if (e.code == GoogleSignInExceptionCode.canceled) {
+        AppLogger().info("The login has been canceled");
         return;
       }
-    } catch (error) {
+    } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Something went wrong.. Could you retry again')),
