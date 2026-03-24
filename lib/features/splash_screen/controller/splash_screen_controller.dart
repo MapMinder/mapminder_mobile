@@ -1,5 +1,5 @@
 import 'package:mapminder_mobile/core/app_logger.dart';
-import 'package:mapminder_mobile/features/login/services/login_service.dart';
+import 'package:mapminder_mobile/features/auth/services/login_service.dart';
 
 class SplashScreenController {
   static SplashScreenController? _instance;

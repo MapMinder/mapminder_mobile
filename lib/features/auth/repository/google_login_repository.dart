@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:mapminder_mobile/core/app_logger.dart';
 import 'package:mapminder_mobile/core/http_client.dart';
-import 'package:mapminder_mobile/features/login/dto/login_dto.dart';
-import 'package:mapminder_mobile/features/login/repository/interfaces/oauth_login_repository.dart';
-import 'package:mapminder_mobile/features/login/domain/user.dart';
+import 'package:mapminder_mobile/features/auth/dto/login_dto.dart';
+import 'package:mapminder_mobile/features/auth/repository/interfaces/oauth_login_repository.dart';
+import 'package:mapminder_mobile/features/auth/domain/user.dart';
 
 class GoogleLoginRepository implements OauthLoginRepository {
   static GoogleLoginRepository? _instance;

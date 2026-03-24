@@ -1,8 +1,9 @@
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mapminder_mobile/core/app_logger.dart';
+import 'package:mapminder_mobile/core/google_auth_client.dart';
 import 'package:mapminder_mobile/core/security_store.dart';
-import 'package:mapminder_mobile/features/login/repository/google_login_repository.dart';
-import 'package:mapminder_mobile/features/login/services/interfaces/oauth_login_services.dart';
+import 'package:mapminder_mobile/features/auth/repository/google_login_repository.dart';
+import 'package:mapminder_mobile/features/auth/services/interfaces/oauth_login_services.dart';
 
 class GoogleLoginServices implements OauthLoginServices {
   static GoogleLoginServices? _instance;
@@ -12,18 +13,20 @@ class GoogleLoginServices implements OauthLoginServices {
     return _instance!;
   }
 
-  final GoogleSignIn signIn = GoogleSignIn.instance;
-  GoogleLoginServices._() {
-    signIn.initialize();
-  }
+  GoogleLoginServices._();
+  
+  // repositories
   final googleLoginRepository = GoogleLoginRepository();
+
+  // dependencies
+  final googleClient = GoogleAuthClient();
   final securityStorage = SecurityStore();
 
   // signInWithGoogle() get google's idToken that is required to register or create JWT token
   @override
   Future<void> login() async {
     try {
-      final GoogleSignInAccount account = await signIn.authenticate();
+      final GoogleSignInAccount account = await googleClient.authenticate();
       final auth = account.authentication;
       final idToken = auth.idToken;
       if (idToken == null) {

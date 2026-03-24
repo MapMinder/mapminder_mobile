@@ -1,5 +1,5 @@
 import 'package:mapminder_mobile/core/security_store.dart';
-import 'package:mapminder_mobile/features/login/repository/google_login_repository.dart';
+import 'package:mapminder_mobile/features/auth/repository/google_login_repository.dart';
 
 class LoginServices {
   static LoginServices? _instance;

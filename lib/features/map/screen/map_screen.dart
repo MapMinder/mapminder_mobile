@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mapminder_mobile/features/auth/services/logout_service.dart';
 import 'package:mapminder_mobile/features/map/services/map_style_services.dart';
 
 class MapScreen extends StatefulWidget {
@@ -18,6 +19,7 @@ class _MapScreenState extends State<MapScreen> {
   // TODO: Replace with environ variables
   final LatLng _center = const LatLng(35.493057, 139.668340);
   final double _zoom = 8.0;
+  final logoutService = LogoutService();
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -37,6 +39,18 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
+  void logout() async {
+    try {
+      await logoutService.logout();
+      if (!mounted) return;
+      Navigator.pushNamed(context, "/login");
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Something went wrong.. Could you retry again')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +69,14 @@ class _MapScreenState extends State<MapScreen> {
             target: _center,
             zoom: _zoom
           ),
-        )
+        ),
+        // FIX: fix this when the reminder feature is implemented
+        Center(
+          child: ElevatedButton(
+            onPressed: logout, 
+            child: Text("logout"),
+          ),
+        ),
       ],
     );
   }
