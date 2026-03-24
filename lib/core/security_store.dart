@@ -19,4 +19,8 @@ class SecurityStore {
     String? value = await storage.read(key: key);
     return value;
   }
+
+  Future<void> deleteData(String key) async {
+    return await storage.delete(key: key);
+  }
 }
