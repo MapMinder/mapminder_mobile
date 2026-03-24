@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:mapminder_mobile/features/login/screen/login_screen.dart';
+import 'package:mapminder_mobile/features/auth/screen/login_screen.dart';
 import 'package:mapminder_mobile/features/map/screen/map_screen.dart';
 import 'package:mapminder_mobile/features/splash_screen/screen/splash_screen.dart';
 

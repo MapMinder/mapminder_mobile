@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mapminder_mobile/core/app_logger.dart';
-import 'package:mapminder_mobile/features/login/services/google_login_in_services.dart';
+import 'package:mapminder_mobile/features/auth/services/google_login_in_services.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
