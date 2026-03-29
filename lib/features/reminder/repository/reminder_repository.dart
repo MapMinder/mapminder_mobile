@@ -18,7 +18,7 @@ class ReminderRepository {
   Future<Reminder> createReminder(CreateReminderDto request) async {
     try {
       Response response = await client.dio.post(
-        "/reminder/",
+        "/reminder",
         data: request.toJson(),
       );
       return Reminder.fromJson(response.data["result"]);
