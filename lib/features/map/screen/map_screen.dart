@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapminder_mobile/features/auth/services/logout_service.dart';
+import 'package:mapminder_mobile/features/map/repository/map_repository.dart';
 import 'package:mapminder_mobile/features/map/services/map_style_services.dart';
 import 'package:mapminder_mobile/features/reminder/screen/reminder_form_screen.dart';
 
@@ -25,6 +26,7 @@ class _MapScreenState extends State<MapScreen> {
   final double _zoom = 8.0;
 
   final logoutService = LogoutService();
+  final mapRepository = MapRepository();
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -58,7 +60,8 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  void _addMarkerLongPress(LatLng latLang) {
+  void _addMarkerLongPress(LatLng latLang) async {
+    final displayName = await mapRepository.getLocationInformation(latLang);
     final MarkerId markerId = MarkerId("selected_position");
     final Marker marker = Marker(
       markerId: markerId,
@@ -67,12 +70,13 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       _markers[markerId] = marker;
     });
+    if (!mounted) return;
     showModalBottomSheet (
       isScrollControlled: true,
       isDismissible: false,
       context: context, 
       builder: (BuildContext context) {
-        return ReminderFormScreen(latLang: latLang);
+        return ReminderFormScreen(latLang: latLang, displayName: displayName);
       },
     );
   }
@@ -90,6 +94,7 @@ class _MapScreenState extends State<MapScreen> {
         GoogleMap(
           style: _mapStyle,
           onMapCreated: _onMapCreated,
+          myLocationButtonEnabled: false,
           initialCameraPosition: CameraPosition(
             target: _center,
             zoom: _zoom
