@@ -4,9 +4,11 @@ import 'package:mapminder_mobile/features/reminder/controller/reminder_controlle
 
 class ReminderFormScreen extends StatefulWidget {
   final LatLng latLang;
+  final String displayName;
 
   const ReminderFormScreen({
     required this.latLang,
+    required this.displayName,
     super.key,
   });
 
@@ -15,6 +17,7 @@ class ReminderFormScreen extends StatefulWidget {
 }
 
 class _ReminderFormScreenState extends State<ReminderFormScreen> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
@@ -28,6 +31,7 @@ class _ReminderFormScreenState extends State<ReminderFormScreen> {
   final reminderController = ReminderController();
 
   void createReminder () async {
+    if (!_formKey.currentState!.validate()) return;
     final double latitude = widget.latLang.latitude;
     final double longitude = widget.latLang.longitude;
     final String title = _titleController.text;
@@ -35,7 +39,7 @@ class _ReminderFormScreenState extends State<ReminderFormScreen> {
     try {
       await reminderController.createReminder(title, description, latitude, longitude);
       if (!mounted) return;
-      Navigator.pushNamed(context, '/map');
+      Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Something went wrong when creating')),
@@ -47,28 +51,51 @@ class _ReminderFormScreenState extends State<ReminderFormScreen> {
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       expand: false,
-      initialChildSize: 0.5,
-      minChildSize: 0.0,
-      maxChildSize: 0.8,
-      snap: true,
-      snapSizes: [0.5, 0.8],
+      initialChildSize: 0.8,
       builder: (BuildContext context, ScrollController scrollController)  {
         return SingleChildScrollView(
           controller: scrollController,
-          child: Column(
-            children: [
-              SizedBox(height: 50),
-              TextField(
-                controller: _titleController,
-                decoration: InputDecoration(labelText: "Title"),
-              ),
-              TextField(
-                controller: _descriptionController,
-                decoration: InputDecoration(labelText: "Description"),
-                maxLines: 2,
-              ),
-              ElevatedButton(onPressed:createReminder, child: Text("create"))
-            ],
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                SizedBox(height: 50),
+                Text(widget.displayName),
+                Text(widget.latLang.latitude.toString()),
+                Text(widget.latLang.longitude.toString()),
+                SizedBox(height: 10),
+                Text("200m radius trigger zone"),
+                TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty){
+                      return 'Reminder Title cannot be empty';
+                    }
+                    return null;
+                  },
+                  controller: _titleController,
+                  decoration: InputDecoration(labelText: "Reminder Title"),
+                ),
+                TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty){
+                      return 'Description cannot be empty';
+                    }
+                    return null;
+                  },
+                  controller: _descriptionController,
+                  decoration: InputDecoration(labelText: "Description"),
+                  maxLines: 5,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    ElevatedButton(onPressed:() {Navigator.pop(context);}, child: Text("cancel")),
+                    ElevatedButton(onPressed:createReminder, child: Text("create"))
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       }
