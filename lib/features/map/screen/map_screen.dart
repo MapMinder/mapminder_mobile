@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapminder_mobile/features/auth/services/logout_service.dart';
+import 'package:mapminder_mobile/features/map/repository/map_repository.dart';
 import 'package:mapminder_mobile/features/map/services/map_style_services.dart';
+import 'package:mapminder_mobile/features/reminder/screen/reminder_form_screen.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -13,13 +15,15 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   String? _mapStyle;
   late GoogleMapController mapController;
-
+  final Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
 
   // default position of map at start up
   // TODO: Replace with environ variables
   final LatLng _center = const LatLng(35.493057, 139.668340);
-  final double _zoom = 8.0;
+  final double _zoom = 10.0;
+
   final logoutService = LogoutService();
+  final mapRepository = MapRepository();
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -39,6 +43,7 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
+  // TODO: move this to the login controller
   void logout() async {
     try {
       await logoutService.logout();
@@ -49,6 +54,28 @@ class _MapScreenState extends State<MapScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Something went wrong.. Could you retry again')),
       );
+    }
+  }
+
+  void _addMarkerLongPress(LatLng latLang) async {
+    final displayName = await mapRepository.getLocationInformation(latLang);
+    if (displayName == null) return;
+    if (!mounted) return;
+    final result = await showModalBottomSheet (
+      isScrollControlled: true,
+      isDismissible: false,
+      context: context, 
+      builder: (BuildContext context) {
+        return ReminderFormScreen(latLang: latLang, displayName: displayName);
+      },
+    );
+    if (result != null) {
+      final MarkerId markerId = MarkerId('$result');
+      final Marker marker = Marker(markerId: markerId, position: latLang);
+      if (!mounted) return;
+      setState(() {
+        _markers[markerId] = marker;
+      });
     }
   }
 
@@ -65,10 +92,13 @@ class _MapScreenState extends State<MapScreen> {
         GoogleMap(
           style: _mapStyle,
           onMapCreated: _onMapCreated,
+          myLocationButtonEnabled: false,
           initialCameraPosition: CameraPosition(
             target: _center,
             zoom: _zoom
           ),
+          markers: Set<Marker>.of(_markers.values),
+          onLongPress: _addMarkerLongPress,
         ),
         // FIX: fix this when the reminder feature is implemented
         Center(
