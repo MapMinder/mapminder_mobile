@@ -10,6 +10,7 @@ class ExternalHttpClient {
         baseUrl: baseUrl,
         headers: {
           'User-Agent': 'MapMinder/1.0.0 (iOS/Android)',
+          'Accept-Language': 'en-US,en;q=0.5',
         }
       ),
     );

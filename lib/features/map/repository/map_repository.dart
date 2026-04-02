@@ -15,7 +15,7 @@ class MapRepository {
 
   final client = ExternalHttpClient(baseUrl: 'https://nominatim.openstreetmap.org');
 
-  Future<String> getLocationInformation(LatLng latLang) async {
+  Future<String?> getLocationInformation(LatLng latLang) async {
     final double latitude = latLang.latitude;
     final double longitude = latLang.longitude;
     try{

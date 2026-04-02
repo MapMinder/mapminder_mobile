@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapminder_mobile/features/reminder/controller/reminder_controller.dart';
+import 'package:mapminder_mobile/features/reminder/domain/reminder.dart';
 
 class ReminderFormScreen extends StatefulWidget {
   final LatLng latLang;
@@ -37,12 +38,12 @@ class _ReminderFormScreenState extends State<ReminderFormScreen> {
     final String title = _titleController.text;
     final String description = _descriptionController.text;
     try {
-      await reminderController.createReminder(title, description, latitude, longitude);
+      Reminder reminder = await reminderController.createReminder(title, description, latitude, longitude);
       if (!mounted) return;
-      Navigator.pop(context);
+      Navigator.pop(context, reminder.reminderId);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Something went wrong when creating')),
+        SnackBar(content: Text("Error occurred when creating the reminder. Wait for a while and try again.")),
       );
     }
   }
@@ -61,14 +62,15 @@ class _ReminderFormScreenState extends State<ReminderFormScreen> {
               children: [
                 SizedBox(height: 50),
                 Text(widget.displayName),
-                Text(widget.latLang.latitude.toString()),
-                Text(widget.latLang.longitude.toString()),
                 SizedBox(height: 10),
                 Text("200m radius trigger zone"),
                 TextFormField(
                   validator: (value) {
                     if (value == null || value.isEmpty){
-                      return 'Reminder Title cannot be empty';
+                      return "Reminder Title cannot be empty";
+                    }
+                    if (value.length > 65) {
+                      return "Reminder Title cannot be longer than 65";
                     }
                     return null;
                   },
@@ -78,7 +80,7 @@ class _ReminderFormScreenState extends State<ReminderFormScreen> {
                 TextFormField(
                   validator: (value) {
                     if (value == null || value.isEmpty){
-                      return 'Description cannot be empty';
+                      return "Description cannot be empty";
                     }
                     return null;
                   },

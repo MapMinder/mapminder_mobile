@@ -24,7 +24,7 @@ class ReminderController {
 
     validator.validateCreateReminderDto(request);
 
-    Reminder reminder = await reminderService.createReminder(request);
+   Reminder reminder = await reminderService.createReminder(request);
     return reminder;
   }
 }

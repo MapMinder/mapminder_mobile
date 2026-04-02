@@ -17,13 +17,10 @@ class _MapScreenState extends State<MapScreen> {
   late GoogleMapController mapController;
   final Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
 
-  final reminderFormScreen = ReminderFormScreen;
-
-
   // default position of map at start up
   // TODO: Replace with environ variables
   final LatLng _center = const LatLng(35.493057, 139.668340);
-  final double _zoom = 8.0;
+  final double _zoom = 10.0;
 
   final logoutService = LogoutService();
   final mapRepository = MapRepository();
@@ -62,16 +59,9 @@ class _MapScreenState extends State<MapScreen> {
 
   void _addMarkerLongPress(LatLng latLang) async {
     final displayName = await mapRepository.getLocationInformation(latLang);
-    final MarkerId markerId = MarkerId("selected_position");
-    final Marker marker = Marker(
-      markerId: markerId,
-      position: latLang,
-    );
-    setState(() {
-      _markers[markerId] = marker;
-    });
+    if (displayName == null) return;
     if (!mounted) return;
-    showModalBottomSheet (
+    final result = await showModalBottomSheet (
       isScrollControlled: true,
       isDismissible: false,
       context: context, 
@@ -79,6 +69,14 @@ class _MapScreenState extends State<MapScreen> {
         return ReminderFormScreen(latLang: latLang, displayName: displayName);
       },
     );
+    if (result != null) {
+      final MarkerId markerId = MarkerId('$result');
+      final Marker marker = Marker(markerId: markerId, position: latLang);
+      if (!mounted) return;
+      setState(() {
+        _markers[markerId] = marker;
+      });
+    }
   }
 
   @override
