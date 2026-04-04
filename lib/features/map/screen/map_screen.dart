@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mapminder_mobile/core/loading.dart';
 import 'package:mapminder_mobile/features/auth/services/logout_service.dart';
 import 'package:mapminder_mobile/features/map/repository/map_repository.dart';
 import 'package:mapminder_mobile/features/map/services/map_style_services.dart';
@@ -18,7 +19,7 @@ class _MapScreenState extends State<MapScreen> {
   String? _mapStyle;
   late GoogleMapController mapController;
   final Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
-  late List<Reminder> reminders;
+  List<Reminder>? reminders;
 
   // default position of map at start up
   // TODO: Replace with environ variables
@@ -45,9 +46,9 @@ class _MapScreenState extends State<MapScreen> {
   void _loadUserReminders() async {
     try {
       reminders = await reminderController.getAllReminders();
-      if (reminders.isEmpty || !mounted) return;
+      if (!mounted) return;
       setState(() {
-        for (var reminder in reminders) {
+        for (var reminder in reminders!) {
           final markerId = MarkerId(reminder.reminderId);
           final Marker usersMarkers = Marker(markerId: markerId, position: LatLng(reminder.latitude, reminder.longitude));
           _markers[markerId] = usersMarkers;
@@ -111,32 +112,31 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     // when mapStyle is not provided return loading indicator
-    if (_mapStyle == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
     // render map
-    return Stack(
-      children: <Widget>[
-        GoogleMap(
-          style: _mapStyle,
-          onMapCreated: _onMapCreated,
-          myLocationButtonEnabled: false,
-          initialCameraPosition: CameraPosition(
-            target: _center,
-            zoom: _zoom
+    return Loading(
+      isLoading: _mapStyle == null || reminders == null,
+      child: Stack(
+        children: <Widget>[
+          GoogleMap(
+            style: _mapStyle ?? '',
+            onMapCreated: _onMapCreated,
+            myLocationButtonEnabled: false,
+            initialCameraPosition: CameraPosition(
+              target: _center,
+              zoom: _zoom
+            ),
+            markers: Set<Marker>.of(_markers.values),
+            onLongPress: _addMarkerLongPress,
           ),
-          markers: Set<Marker>.of(_markers.values),
-          onLongPress: _addMarkerLongPress,
-        ),
-        // FIX: fix this when the reminder feature is implemented
-        Center(
-          child: ElevatedButton(
-            onPressed: logout, 
-            child: Text("logout"),
+          // FIX: fix this when the reminder feature is implemented
+          Center(
+            child: ElevatedButton(
+              onPressed: logout, 
+              child: Text("logout"),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
