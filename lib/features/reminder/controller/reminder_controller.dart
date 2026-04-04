@@ -27,4 +27,9 @@ class ReminderController {
    Reminder reminder = await reminderService.createReminder(request);
     return reminder;
   }
+
+  Future<List<Reminder>> getAllReminders() async {
+    List<Reminder> reminders = await reminderService.getAllReminders();
+    return reminders;
+  }
 }
