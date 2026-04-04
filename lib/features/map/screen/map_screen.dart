@@ -3,6 +3,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapminder_mobile/features/auth/services/logout_service.dart';
 import 'package:mapminder_mobile/features/map/repository/map_repository.dart';
 import 'package:mapminder_mobile/features/map/services/map_style_services.dart';
+import 'package:mapminder_mobile/features/reminder/controller/reminder_controller.dart';
+import 'package:mapminder_mobile/features/reminder/domain/reminder.dart';
 import 'package:mapminder_mobile/features/reminder/screen/reminder_form_screen.dart';
 
 class MapScreen extends StatefulWidget {
@@ -16,6 +18,7 @@ class _MapScreenState extends State<MapScreen> {
   String? _mapStyle;
   late GoogleMapController mapController;
   final Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
+  late List<Reminder> reminders;
 
   // default position of map at start up
   // TODO: Replace with environ variables
@@ -24,17 +27,40 @@ class _MapScreenState extends State<MapScreen> {
 
   final logoutService = LogoutService();
   final mapRepository = MapRepository();
+  final reminderController = ReminderController();
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
+
   // load dark map style for map
   // v0.0.1 supoprt's only dark mode
   @override
   void initState() {
     super.initState();
     _loadStyle();
+    _loadUserReminders();
   }
+
+  void _loadUserReminders() async {
+    try {
+      reminders = await reminderController.getAllReminders();
+      if (reminders.isEmpty || !mounted) return;
+      setState(() {
+        for (var reminder in reminders) {
+          final markerId = MarkerId(reminder.reminderId);
+          final Marker usersMarkers = Marker(markerId: markerId, position: LatLng(reminder.latitude, reminder.longitude));
+          _markers[markerId] = usersMarkers;
+        }
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Something went wrong when loading your reminder's... please restart your app")),
+      );
+    }
+  }
+
 
   void _loadStyle() async {
     final style = await MapStyleServices.loadDarkStyle();
@@ -52,7 +78,7 @@ class _MapScreenState extends State<MapScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Something went wrong.. Could you retry again')),
+        SnackBar(content: Text("Something went wrong.. Could you retry again")),
       );
     }
   }
@@ -62,6 +88,9 @@ class _MapScreenState extends State<MapScreen> {
     if (displayName == null) return;
     if (!mounted) return;
     final result = await showModalBottomSheet (
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(0)),
+      ),
       isScrollControlled: true,
       isDismissible: false,
       context: context, 
