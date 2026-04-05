@@ -13,11 +13,10 @@ class CreateReminderDto {
 
   Map<String, dynamic> toJson(){
     return <String, dynamic>{
-      'title': title,
-      'description': description,
-      'latitude': latitude,
-      'longitude': longitude
+      "title": title,
+      "description": description,
+      "latitude": latitude,
+      "longitude": longitude
     };
   }
-
 }

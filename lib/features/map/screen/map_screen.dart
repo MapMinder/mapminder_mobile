@@ -6,6 +6,7 @@ import 'package:mapminder_mobile/features/map/repository/map_repository.dart';
 import 'package:mapminder_mobile/features/map/services/map_style_services.dart';
 import 'package:mapminder_mobile/features/reminder/controller/reminder_controller.dart';
 import 'package:mapminder_mobile/features/reminder/domain/reminder.dart';
+import 'package:mapminder_mobile/features/reminder/screen/reminder_detail_screen.dart';
 import 'package:mapminder_mobile/features/reminder/screen/reminder_form_screen.dart';
 
 class MapScreen extends StatefulWidget {
@@ -43,6 +44,38 @@ class _MapScreenState extends State<MapScreen> {
     _loadUserReminders();
   }
 
+  void _showReminderDetailScreen(Reminder reminder) async {
+    if (!mounted) return;
+    await showModalBottomSheet(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(0)),
+      ),
+      isScrollControlled: true,
+      isDismissible: false,
+      context: context, 
+      builder: (BuildContext context) {
+        return ReminderDetailScreen(
+          reminder: reminder,
+          onUpdate: (updatedReminder){
+            final index = reminders!.indexWhere(
+              (r) => r.reminderId == updatedReminder.reminderId
+            );
+            if (index == -1) return;
+            final markerId = MarkerId(updatedReminder.reminderId);
+            setState(() {
+              reminders![index] = updatedReminder;
+              _markers[markerId] = Marker(
+                onTap: () => _showReminderDetailScreen(updatedReminder),
+                markerId: markerId, 
+                position: LatLng(updatedReminder.latitude, updatedReminder.longitude)
+              );
+            });
+          },
+        );
+      },
+    );
+  }
+
   void _loadUserReminders() async {
     try {
       reminders = await reminderController.getAllReminders();
@@ -50,7 +83,11 @@ class _MapScreenState extends State<MapScreen> {
       setState(() {
         for (var reminder in reminders!) {
           final markerId = MarkerId(reminder.reminderId);
-          final Marker usersMarkers = Marker(markerId: markerId, position: LatLng(reminder.latitude, reminder.longitude));
+          final Marker usersMarkers = Marker(
+            onTap: () => _showReminderDetailScreen(reminder),
+            markerId: markerId, 
+            position: LatLng(reminder.latitude, reminder.longitude)
+          );
           _markers[markerId] = usersMarkers;
         }
       });
