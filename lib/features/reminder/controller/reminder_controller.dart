@@ -1,6 +1,6 @@
-import 'package:mapminder_mobile/features/reminder/controller/reminder_validator.dart';
 import 'package:mapminder_mobile/features/reminder/domain/reminder.dart';
 import 'package:mapminder_mobile/features/reminder/dto/create_reminder_dto.dart';
+import 'package:mapminder_mobile/features/reminder/dto/update_reminder_dto.dart';
 import 'package:mapminder_mobile/features/reminder/services/reminder_service.dart';
 
 class ReminderController {
@@ -17,19 +17,23 @@ class ReminderController {
   final reminderService = ReminderService();
 
   // validator
-  final validator = ReminderValidator();
 
   Future<Reminder> createReminder(String title, String description, double latitude, double longitude) async {
     CreateReminderDto request = CreateReminderDto(title, description, latitude, longitude);
 
-    validator.validateCreateReminderDto(request);
-
-   Reminder reminder = await reminderService.createReminder(request);
+    Reminder reminder = await reminderService.createReminder(request);
     return reminder;
   }
 
   Future<List<Reminder>> getAllReminders() async {
-    List<Reminder> reminders = await reminderService.getAllReminders();
-    return reminders;
+    List<Reminder> reminder = await reminderService.getAllReminders();
+    return reminder;
+  }
+
+  Future<Reminder> updateReminder(String reminderId, String title, String description)  async {
+    UpdateReminderDto request = UpdateReminderDto(title, description);
+
+    Reminder reminder = await reminderService.updateReminder(reminderId, request);
+    return reminder;
   }
 }
