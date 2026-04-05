@@ -28,4 +28,8 @@ class ReminderService {
     Reminder reminder = await reminderRepository.updateReminder(reminderId, request);
     return reminder;
   }
+
+  Future<void> deleteReminder(String reminderId) async {
+    await reminderRepository.deleteReminder(reminderId);
+  }
 }

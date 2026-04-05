@@ -68,6 +68,24 @@ class _ReminderDetailScreenState extends State<ReminderDetailScreen> {
     }
   }
 
+  void _deleteRemiinder () async {
+    try {
+      await reminderController.deleteReminder(_currentReminder.reminderId);
+      if (!mounted) return;
+      // TODO: add return value from the navigator so can catch and show in snackbar;
+      Navigator.pop(context);
+    } catch (e) {
+    if (!mounted) return;
+    setState(() {
+      loading = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error occurred when updating the reminder. Wait for a while and try again.")),
+    );
+  }
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
@@ -147,7 +165,7 @@ class _ReminderDetailScreenState extends State<ReminderDetailScreen> {
                     ],
                   ),
                   ElevatedButton(
-                    onPressed: () {}, 
+                    onPressed: _deleteRemiinder, 
                     child: Text("Delete")
                   )
                 ],
