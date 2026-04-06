@@ -64,4 +64,18 @@ class ReminderRepository {
       throw Exception("Unexpected error occurred");
     }
   }
+
+  Future<void> deleteReminder(String reminderId) async {
+    try {
+      await client.dio.delete(
+        "/reminder/$reminderId",
+      );
+    } on DioException catch (e, s) {
+      AppLogger().error("error occurred while calling the backend. ${e.error}", e, s);
+      throw Exception("error occurred while calling the backend. ${e.error}");
+    } catch (e, s) {
+      AppLogger().error("Unexpected error occurred", e, s);
+      throw Exception("Unexpected error occurred");
+    }
+  }
 }

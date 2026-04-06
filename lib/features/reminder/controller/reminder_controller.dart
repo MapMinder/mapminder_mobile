@@ -31,9 +31,19 @@ class ReminderController {
   }
 
   Future<Reminder> updateReminder(String reminderId, String title, String description)  async {
+    if (reminderId.isEmpty) {
+      throw Exception("Reminder id is not provided");
+    }
     UpdateReminderDto request = UpdateReminderDto(title, description);
 
     Reminder reminder = await reminderService.updateReminder(reminderId, request);
     return reminder;
+  }
+
+  Future<void> deleteReminder(String reminderId) async {
+    if (reminderId.isEmpty) {
+      throw Exception("Reminder id is not provided");
+    }
+    await reminderService.deleteReminder(reminderId);
   }
 }

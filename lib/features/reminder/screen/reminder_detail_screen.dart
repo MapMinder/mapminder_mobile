@@ -4,10 +4,12 @@ import 'package:mapminder_mobile/features/reminder/controller/reminder_controlle
 import 'package:mapminder_mobile/features/reminder/domain/reminder.dart';
 
 class ReminderDetailScreen extends StatefulWidget {
+  final String locationName;
   final Reminder reminder;
   final void Function(Reminder) onUpdate;
 
   const ReminderDetailScreen({
+    required this.locationName,
     required this.reminder,
     required this.onUpdate,
     super.key
@@ -68,6 +70,25 @@ class _ReminderDetailScreenState extends State<ReminderDetailScreen> {
     }
   }
 
+  void _deleteReminder () async {
+    try {
+      await reminderController.deleteReminder(_currentReminder.reminderId);
+      if (!mounted) return;
+      setState(() {
+        loading = true;
+      });
+      Navigator.pop(context, _currentReminder.reminderId);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        loading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error occurred when updating the reminder. Wait for a while and try again.")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
@@ -105,6 +126,7 @@ class _ReminderDetailScreenState extends State<ReminderDetailScreen> {
                       ),
                     ]
                   ),
+                  if (!isEditing) Text(widget.locationName),
                   if (isEditing) TextFormField(
                     validator: (value) {
                       if (value == null || value.isEmpty){
@@ -147,7 +169,7 @@ class _ReminderDetailScreenState extends State<ReminderDetailScreen> {
                     ],
                   ),
                   ElevatedButton(
-                    onPressed: () {}, 
+                    onPressed: _deleteReminder, 
                     child: Text("Delete")
                   )
                 ],

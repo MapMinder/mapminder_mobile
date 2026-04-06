@@ -45,8 +45,11 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _showReminderDetailScreen(Reminder reminder) async {
+    final LatLng latLang = LatLng(reminder.latitude, reminder.longitude);
+    final displayName = await mapRepository.getLocationInformation(latLang);
+    if (displayName == null) return;
     if (!mounted) return;
-    await showModalBottomSheet(
+    final result = await showModalBottomSheet(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(0)),
       ),
@@ -55,6 +58,7 @@ class _MapScreenState extends State<MapScreen> {
       context: context, 
       builder: (BuildContext context) {
         return ReminderDetailScreen(
+          locationName: displayName,
           reminder: reminder,
           onUpdate: (updatedReminder){
             final index = reminders!.indexWhere(
@@ -74,6 +78,13 @@ class _MapScreenState extends State<MapScreen> {
         );
       },
     );
+    if (result != null) {
+      if (!mounted) return;
+      setState(() {
+        _markers.remove(MarkerId(result));
+        reminders?.removeWhere((reminder) => reminder.reminderId == result);
+      });
+    }
   }
 
   void _loadUserReminders() async {
@@ -125,7 +136,7 @@ class _MapScreenState extends State<MapScreen> {
     final displayName = await mapRepository.getLocationInformation(latLang);
     if (displayName == null) return;
     if (!mounted) return;
-    final result = await showModalBottomSheet (
+    final Reminder? result = await showModalBottomSheet (
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(0)),
       ),
@@ -136,11 +147,17 @@ class _MapScreenState extends State<MapScreen> {
         return ReminderFormScreen(latLang: latLang, displayName: displayName);
       },
     );
+
     if (result != null) {
-      final MarkerId markerId = MarkerId('$result');
-      final Marker marker = Marker(markerId: markerId, position: latLang);
+      final MarkerId markerId = MarkerId(result.reminderId);
+      final Marker marker = Marker(
+        onTap:() => _showReminderDetailScreen(result),
+        markerId: markerId, 
+        position: latLang
+      );
       if (!mounted) return;
       setState(() {
+        reminders?.add(result);
         _markers[markerId] = marker;
       });
     }
