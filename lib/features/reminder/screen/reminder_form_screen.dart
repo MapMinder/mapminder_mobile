@@ -45,7 +45,7 @@ class _ReminderFormScreenState extends State<ReminderFormScreen> {
       });
       Reminder reminder = await reminderController.createReminder(title, description, latitude, longitude);
       if (!mounted) return;
-      Navigator.pop(context, reminder.reminderId);
+      Navigator.pop(context, reminder);
     } catch (e) {
       setState(() {
         loading = false;

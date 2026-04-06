@@ -4,10 +4,12 @@ import 'package:mapminder_mobile/features/reminder/controller/reminder_controlle
 import 'package:mapminder_mobile/features/reminder/domain/reminder.dart';
 
 class ReminderDetailScreen extends StatefulWidget {
+  final String locationName;
   final Reminder reminder;
   final void Function(Reminder) onUpdate;
 
   const ReminderDetailScreen({
+    required this.locationName,
     required this.reminder,
     required this.onUpdate,
     super.key
@@ -68,22 +70,20 @@ class _ReminderDetailScreenState extends State<ReminderDetailScreen> {
     }
   }
 
-  void _deleteRemiinder () async {
+  void _deleteReminder () async {
     try {
       await reminderController.deleteReminder(_currentReminder.reminderId);
       if (!mounted) return;
-      // TODO: add return value from the navigator so can catch and show in snackbar;
-      Navigator.pop(context);
+      Navigator.pop(context, _currentReminder.reminderId);
     } catch (e) {
-    if (!mounted) return;
-    setState(() {
-      loading = false;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error occurred when updating the reminder. Wait for a while and try again.")),
-    );
-  }
-
+      if (!mounted) return;
+      setState(() {
+        loading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error occurred when updating the reminder. Wait for a while and try again.")),
+      );
+    }
   }
 
   @override
@@ -123,6 +123,7 @@ class _ReminderDetailScreenState extends State<ReminderDetailScreen> {
                       ),
                     ]
                   ),
+                  if (!isEditing) Text(widget.locationName),
                   if (isEditing) TextFormField(
                     validator: (value) {
                       if (value == null || value.isEmpty){
@@ -165,7 +166,7 @@ class _ReminderDetailScreenState extends State<ReminderDetailScreen> {
                     ],
                   ),
                   ElevatedButton(
-                    onPressed: _deleteRemiinder, 
+                    onPressed: _deleteReminder, 
                     child: Text("Delete")
                   )
                 ],
