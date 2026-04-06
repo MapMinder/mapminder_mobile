@@ -74,6 +74,9 @@ class _ReminderDetailScreenState extends State<ReminderDetailScreen> {
     try {
       await reminderController.deleteReminder(_currentReminder.reminderId);
       if (!mounted) return;
+      setState(() {
+        loading = true;
+      });
       Navigator.pop(context, _currentReminder.reminderId);
     } catch (e) {
       if (!mounted) return;
