@@ -3,11 +3,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapminder_mobile/core/loading.dart';
 import 'package:mapminder_mobile/features/auth/services/logout_service.dart';
 import 'package:mapminder_mobile/features/map/notifier/map_notifier.dart';
-import 'package:mapminder_mobile/features/map/repository/map_repository.dart';
 import 'package:mapminder_mobile/features/map/services/map_style_services.dart';
-import 'package:mapminder_mobile/features/reminder/domain/reminder.dart';
-import 'package:mapminder_mobile/features/reminder/screen/reminder_detail_screen.dart';
-import 'package:mapminder_mobile/features/reminder/screen/reminder_form_screen.dart';
+import 'package:mapminder_mobile/features/map/interaction_handler/map_interaction_handler.dart';
 import 'package:provider/provider.dart';
 
 class MapScreen extends StatefulWidget {
@@ -26,8 +23,9 @@ class _MapScreenState extends State<MapScreen> {
   final LatLng _center = const LatLng(35.493057, 139.668340);
   final double _zoom = 10.0;
 
+
+  late final MapInteractionHandler mapInteractionHandler;
   final logoutService = LogoutService();
-  final mapRepository = MapRepository();
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -39,51 +37,11 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     _loadStyle();
+    mapInteractionHandler = MapInteractionHandler(isMounted: () => mounted);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadUserReminders();
+      mapInteractionHandler.loadUserReminders(context);
     });
   }
-
-  void _showReminderDetailScreen(Reminder reminder) async {
-    final LatLng position = LatLng(reminder.latitude, reminder.longitude);
-    final displayName = await mapRepository.getLocationInformation(position);
-    if (displayName == null) return;
-    if (!mounted) return;
-    final result = await showModalBottomSheet(
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(0)),
-      ),
-      isScrollControlled: true,
-      isDismissible: false,
-      context: context, 
-      builder: (BuildContext bottomSheetContext) {
-        return ReminderDetailScreen(
-          locationName: displayName,
-          reminder: reminder,
-          onUpdate: (updatedReminder){
-            Provider.of<MapNotifier>(context, listen: false).updateReminder(updatedReminder, position, () => _showReminderDetailScreen(reminder));
-          },
-        );
-      },
-    );
-    if (result != null) {
-      if (!mounted) return;
-      Provider.of<MapNotifier>(context, listen: false).deleteReminder(result);
-    }
-  }
-
-  void _loadUserReminders() async {
-    try {
-      if (!mounted) return;
-      Provider.of<MapNotifier>(context, listen: false).loadUserReminders((reminder) => () => _showReminderDetailScreen(reminder));
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Something went wrong when loading your reminder's... please restart your app")),
-      );
-    }
-  }
-
 
   void _loadStyle() async {
     final style = await MapStyleServices.loadDarkStyle();
@@ -106,28 +64,6 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  void _addMarkerOnLongPress(LatLng position) async {
-    final displayName = await mapRepository.getLocationInformation(position);
-    if (displayName == null) return;
-    if (!mounted) return;
-    final Reminder? result = await showModalBottomSheet (
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(0)),
-      ),
-      isScrollControlled: true,
-      isDismissible: false,
-      context: context, 
-      builder: (BuildContext bottomSheetContext) {
-        return ReminderFormScreen(latLang: position, displayName: displayName);
-      },
-    );
-
-    if (result != null) {
-      if (!mounted) return;
-      Provider.of<MapNotifier>(context, listen: false).addReminder(result, position, () => _showReminderDetailScreen(result));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     // when mapStyle is not provided return loading indicator
@@ -135,7 +71,7 @@ class _MapScreenState extends State<MapScreen> {
     return Consumer<MapNotifier>(
       builder: (context, mapNotifier, child) {
         return Loading(
-        isLoading: _mapStyle == null || mapNotifier.reminders == null,
+        isLoading: _mapStyle == null || mapNotifier.getReminders() == null,
         child: Stack(
           children: <Widget>[
             GoogleMap(
@@ -147,7 +83,7 @@ class _MapScreenState extends State<MapScreen> {
                 zoom: _zoom
               ),
               markers: mapNotifier.getMarkers(),
-              onLongPress: _addMarkerOnLongPress,
+              onLongPress: (position) => mapInteractionHandler.addMarkerOnLongPress(context, position),
             ),
             // FIX: fix this when the reminder feature is implemented
             Center(
