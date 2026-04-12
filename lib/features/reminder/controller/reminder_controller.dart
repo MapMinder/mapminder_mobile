@@ -46,4 +46,8 @@ class ReminderController {
     }
     await reminderService.deleteReminder(reminderId);
   }
+
+  Future<List<Reminder>> getRemindersWithStatus(ReminderStatus status) async {
+    return await reminderService.getReminderWithStatus(status);
+  }
 }

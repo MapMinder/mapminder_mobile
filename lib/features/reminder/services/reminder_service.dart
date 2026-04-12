@@ -32,4 +32,9 @@ class ReminderService {
   Future<void> deleteReminder(String reminderId) async {
     await reminderRepository.deleteReminder(reminderId);
   }
+
+  Future<List<Reminder>> getReminderWithStatus(ReminderStatus status) async {
+    List<Reminder> reminder = await reminderRepository.getRemindersWithStatus(status);
+    return reminder;
+  }
 }
