@@ -5,6 +5,7 @@ import 'package:mapminder_mobile/features/auth/services/logout_service.dart';
 import 'package:mapminder_mobile/features/map/notifier/map_notifier.dart';
 import 'package:mapminder_mobile/features/map/services/map_style_services.dart';
 import 'package:mapminder_mobile/features/map/interaction_handler/map_interaction_handler.dart';
+import 'package:mapminder_mobile/features/reminder/screen/reminder_list_screen.dart';
 import 'package:provider/provider.dart';
 
 class MapScreen extends StatefulWidget {
@@ -92,6 +93,24 @@ class _MapScreenState extends State<MapScreen> {
                 child: Text("logout"),
               ),
             ),
+            Positioned(
+              bottom: 20,
+              left: 20,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  showModalBottomSheet(
+                    isScrollControlled: true,
+                    isDismissible: false,
+                    context: context, 
+                    builder: (BuildContext bottomSheetContext) {
+                      return ReminderListScreen();
+                    }
+                    );
+                },
+                icon: const Icon(Icons.menu),
+                label: const Text("Reminders"),
+              ),
+            )
           ],
         ),
       );
