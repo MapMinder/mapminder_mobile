@@ -44,7 +44,12 @@ class _ReminderListScreenState extends State<ReminderListScreen> with TickerProv
                   controller: _tabController,
                   dividerColor: Colors.transparent,
                   tabs: <Widget>[
-                    Tab(text: 'All', icon: Icon(Icons.all_inbox)),
+                    Tab(child: Row(
+                        children: [
+                          Icon(Icons.all_inbox),
+                          Text("All"),
+                        ],
+                    )),
                     Tab(text: 'Active', icon: Icon(Icons.play_arrow)),
                     Tab(text: 'Paused', icon: Icon(Icons.pause)),
                     Tab(text: 'Completed', icon: Icon(Icons.check_rounded)),
