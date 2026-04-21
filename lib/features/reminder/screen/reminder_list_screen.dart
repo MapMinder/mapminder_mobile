@@ -85,32 +85,32 @@ class _ReminderListScreenState extends State<ReminderListScreen> with TickerProv
                             ListView(
                               children: (reminderListnotifier.getReminders() ?? []).map((reminder) => ReminderCard(
                                   reminder: reminder, 
-                                  onStatusChange: (status) {}, 
-                                  onDelete: () {},
+                                  onStatusChange: (status) => reminderListnotifier.updateReminderStatus(reminder.reminderId, status, false), 
+                                  onDelete: () => reminderListnotifier.deleteReminder(reminder.reminderId),
                               )
                               ).toList(),
                             ),
                             ListView(
                               children: (reminderListnotifier.getReminders() ?? []).map((reminder) => ReminderCard(
                                   reminder: reminder, 
-                                  onStatusChange: (status) {}, 
-                                  onDelete: () {},
+                                  onStatusChange: (status) => reminderListnotifier.updateReminderStatus(reminder.reminderId, status, true), 
+                                  onDelete: () => reminderListnotifier.deleteReminder(reminder.reminderId),
                               )
                               ).toList(),
                             ),
                             ListView(
                               children: (reminderListnotifier.getReminders() ?? []).map((reminder) => ReminderCard(
                                   reminder: reminder, 
-                                  onStatusChange: (status) {}, 
-                                  onDelete: () {},
+                                  onStatusChange: (status) => reminderListnotifier.updateReminderStatus(reminder.reminderId, status, true), 
+                                  onDelete: () => reminderListnotifier.deleteReminder(reminder.reminderId),
                               )
                               ).toList(),
                             ),
                             ListView(
                               children: (reminderListnotifier.getReminders() ?? []).map((reminder) => ReminderCard(
                                   reminder: reminder, 
-                                  onStatusChange: (status) {}, 
-                                  onDelete: () {},
+                                  onStatusChange: (status) => reminderListnotifier.updateReminderStatus(reminder.reminderId, status, true), 
+                                  onDelete: () => reminderListnotifier.deleteReminder(reminder.reminderId),
                               )
                               ).toList(),
                             ),

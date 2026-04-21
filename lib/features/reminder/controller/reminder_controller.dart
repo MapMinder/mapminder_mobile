@@ -34,8 +34,17 @@ class ReminderController {
     if (reminderId.isEmpty) {
       throw Exception("Reminder id is not provided");
     }
-    UpdateReminderDto request = UpdateReminderDto(title, description);
+    UpdateReminderDto request = UpdateReminderDto(title, description, null);
 
+    Reminder reminder = await reminderService.updateReminder(reminderId, request);
+    return reminder;
+  }
+
+  Future<Reminder> updateReminderStatus(String reminderId, ReminderStatus status)  async {
+    if (reminderId.isEmpty) {
+      throw Exception("Reminder id is not provided");
+    }
+    UpdateReminderDto request = UpdateReminderDto(null, null, status);
     Reminder reminder = await reminderService.updateReminder(reminderId, request);
     return reminder;
   }
