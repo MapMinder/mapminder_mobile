@@ -5,6 +5,7 @@ import 'package:mapminder_mobile/features/auth/services/logout_service.dart';
 import 'package:mapminder_mobile/features/map/notifier/map_notifier.dart';
 import 'package:mapminder_mobile/features/map/services/map_style_services.dart';
 import 'package:mapminder_mobile/features/map/interaction_handler/map_interaction_handler.dart';
+import 'package:mapminder_mobile/features/reminder/notifier/reminder_list_notifier.dart';
 import 'package:mapminder_mobile/features/reminder/screen/reminder_list_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -103,7 +104,10 @@ class _MapScreenState extends State<MapScreen> {
                     isDismissible: false,
                     context: context, 
                     builder: (BuildContext bottomSheetContext) {
-                      return ReminderListScreen();
+                      return ChangeNotifierProvider(
+                        create: (context) => ReminderListNotifier(),
+                        child: ReminderListScreen(),
+                      );
                     }
                     );
                 },

@@ -24,9 +24,9 @@ class ReminderCard extends StatelessWidget {
     };
 
     Icon statusIcon = switch (reminder.status) {
-      ReminderStatus.active => Icon(Icons.circle),
-      ReminderStatus.paused => Icon(Icons.pause),
-      ReminderStatus.completed => Icon(Icons.check_box_rounded),
+      ReminderStatus.active => Icon(Icons.circle, color: statusColor),
+      ReminderStatus.paused => Icon(Icons.pause, color: statusColor),
+      ReminderStatus.completed => Icon(Icons.check_box_rounded, color: statusColor),
     };
 
     Icon statusChangeIcon = switch (reminder.status) {
@@ -70,12 +70,12 @@ class ReminderCard extends StatelessWidget {
                     onPressed: () => onStatusChange(ReminderStatus.completed), 
                     icon: Icon(Icons.check_box_rounded),
                   ),
+                ],
+              ),
                   IconButton(
                     onPressed: onDelete, 
                     icon: Icon(Icons.delete),
                   ),
-                ],
-              ),
             ],
           ), 
         ],

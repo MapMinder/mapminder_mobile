@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mapminder_mobile/core/loading.dart';
+import 'package:mapminder_mobile/features/reminder/domain/reminder.dart';
+import 'package:mapminder_mobile/features/reminder/notifier/reminder_list_notifier.dart';
+import 'package:mapminder_mobile/features/reminder/widget/reminder_card.dart';
+import 'package:provider/provider.dart';
 
 class ReminderListScreen extends StatefulWidget {
   const ReminderListScreen({super.key});
@@ -16,6 +20,22 @@ class _ReminderListScreenState extends State<ReminderListScreen> with TickerProv
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener((){
+      final notifier = Provider.of<ReminderListNotifier>(context, listen: false);
+      switch (_tabController.index) {
+        case 0:
+          notifier.getAllReminders();
+        case 1:
+          notifier.getRemindersWithStatus(ReminderStatus.active);
+        case 2:
+          notifier.getRemindersWithStatus(ReminderStatus.paused);
+        case 3:
+          notifier.getRemindersWithStatus(ReminderStatus.completed);
+      }
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ReminderListNotifier>(context, listen: false).getAllReminders();
+    });
   }
 
   @override
@@ -36,9 +56,7 @@ class _ReminderListScreenState extends State<ReminderListScreen> with TickerProv
       builder: (BuildContext context, ScrollController scrollController) {
         return Loading(
           isLoading: false, 
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: Column(
+          child: Column(
               children: [
                 TabBar(
                   controller: _tabController,
@@ -56,20 +74,54 @@ class _ReminderListScreenState extends State<ReminderListScreen> with TickerProv
                   ],
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.8,
-                  child: TabBarView(
-                  controller: _tabController,
-                  children: <Widget>[
-                    Column(children: [SizedBox(height:130, width: 150, child: Card(child: Text("test data")))]),
-                    Center(child: Text("this is the active tab")),
-                    Center(child: Text("this is the pause tab")),
-                    Center(child: Text("this is the completed tab")),
-                  ] 
-                )
+                  height: MediaQuery.of(context).size.height * 0.8 - 100,
+                  child: Consumer<ReminderListNotifier>(
+                    builder: (context, reminderListnotifier, child) {
+                      return Loading(
+                        isLoading: reminderListnotifier.getReminders() == null, 
+                        child: TabBarView(
+                          controller: _tabController,
+                          children: <Widget>[
+                            ListView(
+                              children: (reminderListnotifier.getReminders() ?? []).map((reminder) => ReminderCard(
+                                  reminder: reminder, 
+                                  onStatusChange: (status) {}, 
+                                  onDelete: () {},
+                              )
+                              ).toList(),
+                            ),
+                            ListView(
+                              children: (reminderListnotifier.getReminders() ?? []).map((reminder) => ReminderCard(
+                                  reminder: reminder, 
+                                  onStatusChange: (status) {}, 
+                                  onDelete: () {},
+                              )
+                              ).toList(),
+                            ),
+                            ListView(
+                              children: (reminderListnotifier.getReminders() ?? []).map((reminder) => ReminderCard(
+                                  reminder: reminder, 
+                                  onStatusChange: (status) {}, 
+                                  onDelete: () {},
+                              )
+                              ).toList(),
+                            ),
+                            ListView(
+                              children: (reminderListnotifier.getReminders() ?? []).map((reminder) => ReminderCard(
+                                  reminder: reminder, 
+                                  onStatusChange: (status) {}, 
+                                  onDelete: () {},
+                              )
+                              ).toList(),
+                            ),
+                          ] 
+                        ),
+                      );
+                    }
+                  )
                 )
               ]
             ),
-          ),
         );
       }
     );
