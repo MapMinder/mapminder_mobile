@@ -93,12 +93,12 @@ class _ReminderDetailScreenState extends State<ReminderDetailScreen> {
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       expand: false,
-      initialChildSize: 0.8,
-      maxChildSize: 0.8,
+      initialChildSize: 0.7,
+      maxChildSize: 0.7,
       minChildSize: 0.0,
       snap: true,
-      snapSizes: [0.0, 0.8],
-      builder: (BuildContext context, ScrollController scrollController){
+      snapSizes: [0.0, 0.7],
+      builder: (BuildContext context, ScrollController scrollController) {
         return Loading(
           isLoading: loading, 
           child: SingleChildScrollView(

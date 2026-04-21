@@ -78,4 +78,21 @@ class ReminderRepository {
       throw Exception("Unexpected error occurred");
     }
   }
+
+  Future<List<Reminder>> getRemindersWithStatus(ReminderStatus status) async {
+    try {
+      Response response = await client.dio.get(
+        "/reminder?status=${status.name}"
+      );
+      final remindersJson = response.data["result"] as List;
+      List<Reminder> remindersList = remindersJson.map((json) => Reminder.fromJson(json)).toList();
+      return remindersList;
+    } on DioException catch (e, s) {
+      AppLogger().error("error occurred while calling the backend. ${e.error}", e, s);
+      throw Exception("error occurred while calling the backend. ${e.error}");
+    } catch (e, s) {
+      AppLogger().error("Unexpected error occurred", e, s);
+      throw Exception("Unexpected error occurred");
+    }
+  }
 }
