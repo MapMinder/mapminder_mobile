@@ -39,11 +39,13 @@ class _ReminderFormScreenState extends State<ReminderFormScreen> {
     final double longitude = widget.latLang.longitude;
     final String title = _titleController.text;
     final String description = _descriptionController.text;
+    final String locationName = widget.displayName;
+
     try {
       setState(() {
         loading = true;
       });
-      Reminder reminder = await reminderController.createReminder(title, description, latitude, longitude);
+      Reminder reminder = await reminderController.createReminder(title, description, latitude, longitude, locationName);
       if (!mounted) return;
       Navigator.pop(context, reminder);
     } catch (e) {

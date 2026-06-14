@@ -60,5 +60,9 @@
         </array>
       </dict>
     </array>
+  <key>NSLocationWhenInUseUsageDescription</key>
+  <string>Mapminder needs your location to show you on the map.</string>
+  <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+  <string>MapMinder needs you location to trigger reminders when you arrive near a reminder.</string>
 </dict>
 </plist>

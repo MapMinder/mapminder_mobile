@@ -1,3 +1,5 @@
+import 'package:timeago/timeago.dart' as timeago;
+
 enum ReminderStatus {
   active,
   paused,
@@ -12,6 +14,9 @@ class Reminder {
   double longitude;
   num radius;
   ReminderStatus status;
+  String locationName;
+  String createdAt;
+  String? completedAt;
 
   Reminder(
     this.reminderId,
@@ -20,7 +25,10 @@ class Reminder {
     this.latitude,
     this.longitude,
     this.radius,
-    this.status
+    this.status,
+    this.locationName,
+    this.createdAt,
+    this.completedAt,
   );
 
   factory Reminder.fromJson(Map<String, dynamic> json) {
@@ -32,6 +40,25 @@ class Reminder {
       json['longitude'],
       json['radius'],
       ReminderStatus.values.byName(json['status']),
+      json['location_name'],
+      json['created_at'],
+      json['completed_at'],
     );
+  }
+
+  String getTimeBeforeCreationTimeAgo() {
+    DateTime createdAtDateTime = DateTime.parse(createdAt);
+    String result = timeago.format(createdAtDateTime);
+    return result;
+  }
+
+  String getCompletedTimeBeforeCreationTimeAgo() {
+    DateTime completedDateTime = DateTime.parse(completedAt!);
+    String result = timeago.format(completedDateTime);
+    return result;
+  }
+
+  String getLocationName() {
+    return locationName;
   }
 }

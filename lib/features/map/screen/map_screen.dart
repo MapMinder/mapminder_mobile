@@ -7,6 +7,7 @@ import 'package:mapminder_mobile/features/map/services/map_style_services.dart';
 import 'package:mapminder_mobile/features/map/interaction_handler/map_interaction_handler.dart';
 import 'package:mapminder_mobile/features/reminder/notifier/reminder_list_notifier.dart';
 import 'package:mapminder_mobile/features/reminder/screen/reminder_list_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class MapScreen extends StatefulWidget {
@@ -18,6 +19,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   String? _mapStyle;
+  bool _locationGranted = false;
   late GoogleMapController mapController;
 
   // default position of map at start up
@@ -39,10 +41,34 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     _loadStyle();
+    _loadLocationPermission();
     mapInteractionHandler = MapInteractionHandler(isMounted: () => mounted);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       mapInteractionHandler.loadUserReminders(context);
     });
+  }
+
+  void _loadLocationPermission() async {
+    try {
+      final status = await Permission.location.request();
+      if (!mounted) return;
+      setState(() {
+        _locationGranted = status.isGranted;
+      });
+      if (status.isPermanentlyDenied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Location is disabled. Enable it in Settings to see yourself on the map."),
+            action: SnackBarAction(label: "Settings", onPressed: openAppSettings),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Something went wrong.. Could you retry again")),
+      );
+    }
   }
 
   void _loadStyle() async {
@@ -79,7 +105,7 @@ class _MapScreenState extends State<MapScreen> {
             GoogleMap(
               style: _mapStyle ?? '',
               onMapCreated: _onMapCreated,
-              myLocationButtonEnabled: false,
+              myLocationEnabled: _locationGranted,
               initialCameraPosition: CameraPosition(
                 target: _center,
                 zoom: _zoom
