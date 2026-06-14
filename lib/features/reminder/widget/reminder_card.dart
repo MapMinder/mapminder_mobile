@@ -56,10 +56,13 @@ class ReminderCard extends StatelessWidget {
               ),
             ],
           ),
-          Text("Times Square, New York, NY"), // TODO: this is a placeholder for now will replace when the backend is fixed
+          Text(reminder.getLocationName()),
           Row(
             children: [
-              Text("Created 1 day ago"), // TODO: this is a placeholder for now will replace when the backend is fixed
+              if (reminder.status == ReminderStatus.completed && reminder.completedAt != null) 
+                Text("Completed " + reminder.getCompletedTimeBeforeCreationTimeAgo()) 
+              else
+                Text(reminder.getTimeBeforeCreationTimeAgo()),
               if (!isCompletedReminder) Row(
                 children: [
                   IconButton(

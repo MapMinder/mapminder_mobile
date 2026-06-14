@@ -18,8 +18,8 @@ class ReminderController {
 
   // validator
 
-  Future<Reminder> createReminder(String title, String description, double latitude, double longitude) async {
-    CreateReminderDto request = CreateReminderDto(title, description, latitude, longitude);
+  Future<Reminder> createReminder(String title, String description, double latitude, double longitude, String locationName) async {
+    CreateReminderDto request = CreateReminderDto(title, description, latitude, longitude, locationName);
 
     Reminder reminder = await reminderService.createReminder(request);
     return reminder;
